@@ -105,30 +105,28 @@ def parse_json(raw):
     return json.loads(raw)
 
 def candidate_models(client):
-    available = []
-    for model in client.models.list():
-        name = getattr(model, "name", "").replace("models/", "")
-        if name:
-            available.append(name)
     preferred = [
         "gemini-3.8-flash",
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-        "gemini-2.0-flash",
         "gemini-flash-latest",
+        "gemini-2.0-flash",
     ]
-    ordered = [name for name in preferred if name in available]
-    for name in available:
-        if "flash" in name and "embed" not in name and name not in ordered:
+    found = []
+    try:
+        for model in client.models.list():
+            name = getattr(model, "name", "").replace("models/", "")
+            if name and "flash" in name and "embed" not in name and "2.5" not in name:
+                found.append(name)
+    except Exception:
+        found = []
+    ordered = []
+    for name in preferred + found:
+        if name not in ordered:
             ordered.append(name)
     return ordered
 
 def generate_result(client, contents):
     last_error = None
-    models = candidate_models(client)
-    if not models:
-        raise RuntimeError("이 키로 쓸 수 있는 분석 모델을 찾지 못했습니다.")
-    for model_name in models:
+    for model_name in candidate_models(client):
         try:
             response = client.models.generate_content(
                 model=model_name,
@@ -143,10 +141,10 @@ def generate_result(client, contents):
         except Exception as e:
             last_error = e
             message = str(e)
-            if any(word in message for word in ("503", "429", "UNAVAILABLE", "high demand")):
+            if any(word in message for word in ("404", "503", "429", "NOT_FOUND", "UNAVAILABLE", "high demand", "no longer available")):
                 continue
             raise
-    raise RuntimeError(f"지금 모델이 모두 붐빕니다. 1~2분 뒤 다시 눌러 주세요.\n{last_error}")
+    raise RuntimeError(f"쓸 수 있는 모델을 찾지 못했습니다. 1~2분 뒤 다시 눌러 주세요.\n{last_error}")
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown('<div class="step">STEP 1</div>', unsafe_allow_html=True)
