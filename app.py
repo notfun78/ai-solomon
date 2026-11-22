@@ -13,30 +13,62 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .stApp { background: #10151f; color: #f2f4f8; }
+    html, body, .stApp, [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"], [data-testid="stToolbar"] {
+        background: #10151f !important;
+        color: #f2f4f8 !important;
+    }
     .block-container { padding-top: 2.2rem; padding-bottom: 3rem; max-width: 860px; }
     .hero {
-        background: #161e2e; color: #f2f4f8; border: 1px solid #2a354a;
-        border-radius: 18px; padding: 28px 28px 22px 28px; margin-bottom: 18px;
+        background: #161e2e !important; color: #f2f4f8 !important;
+        border: 1px solid #2a354a; border-radius: 18px;
+        padding: 28px 28px 22px 28px; margin-bottom: 18px;
     }
-    .hero h1 { font-size: 2rem; margin: 0 0 8px 0; color: #f7f8fb; }
-    .hero p { margin: 0; color: #d5dbe6; }
+    .hero h1 { font-size: 2rem; margin: 0 0 8px 0; color: #f7f8fb !important; }
+    .hero p { margin: 0; color: #d5dbe6 !important; }
     .badge-row { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
     .badge {
         background: rgba(212, 180, 131, 0.12); border: 1px solid rgba(212, 180, 131, 0.28);
-        color: #e6d3b0; border-radius: 999px; padding: 4px 10px; font-size: 0.82rem;
+        color: #e6d3b0 !important; border-radius: 999px; padding: 4px 10px; font-size: 0.82rem;
     }
     .card, .result-head {
-        background: #171e2c; border: 1px solid #2a354a; border-radius: 16px;
-        padding: 18px 18px 8px 18px; margin-bottom: 14px; color: #f2f4f8;
+        background: #171e2c !important; border: 1px solid #2a354a; border-radius: 16px;
+        padding: 18px 18px 8px 18px; margin-bottom: 14px; color: #f2f4f8 !important;
     }
-    .step { color: #d4b483; font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; }
+    .step { color: #d4b483 !important; font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; }
+    h1, h2, h3, p, span, label, li, .stMarkdown, [data-testid="stWidgetLabel"] {
+        color: #f2f4f8 !important;
+    }
+    textarea, input, [data-baseweb="select"] > div {
+        background: #121826 !important;
+        color: #f2f4f8 !important;
+        border-color: #3a465c !important;
+        -webkit-text-fill-color: #f2f4f8 !important;
+    }
+    textarea::placeholder, input::placeholder { color: #9aa6ba !important; }
+    [data-testid="stFileUploader"] section {
+        background: #121826 !important;
+        border-color: #3a465c !important;
+        color: #f2f4f8 !important;
+    }
+    [data-testid="stFileUploader"] section * { color: #f2f4f8 !important; }
+    button[kind="primary"] {
+        background: #d4b483 !important;
+        color: #10151f !important;
+        border: none !important;
+    }
+    button[kind="primary"] * { color: #10151f !important; }
     .split { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: #2a3344; margin: 8px 0 6px 0; }
     .split-a { background: #8eb4e8; }
     .split-b { background: #d4b483; }
-    .note { color: #c5cedd; font-size: 0.86rem; }
+    .note { color: #c5cedd !important; font-size: 0.86rem; }
     div[data-testid="stMetric"] {
-        background: #121826; border: 1px solid #2a354a; border-radius: 14px; padding: 10px 12px;
+        background: #121826 !important; border: 1px solid #2a354a;
+        border-radius: 14px; padding: 10px 12px;
+    }
+    pre, code, .stCode {
+        background: #121826 !important;
+        color: #f2f4f8 !important;
     }
     </style>
     """,
@@ -64,7 +96,15 @@ def get_api_key():
     except Exception:
         return ""
 
-def pick_model(client):
+def parse_json(raw):
+    raw = (raw or "").strip()
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start >= 0 and end > start:
+        raw = raw[start:end + 1]
+    return json.loads(raw)
+
+def candidate_models(client):
     available = []
     for model in client.models.list():
         name = getattr(model, "name", "").replace("models/", "")
@@ -77,21 +117,36 @@ def pick_model(client):
         "gemini-2.0-flash",
         "gemini-flash-latest",
     ]
-    for name in preferred:
-        if name in available:
-            return name
+    ordered = [name for name in preferred if name in available]
     for name in available:
-        if "flash" in name and "embed" not in name:
-            return name
-    return None
+        if "flash" in name and "embed" not in name and name not in ordered:
+            ordered.append(name)
+    return ordered
 
-def parse_json(raw):
-    raw = (raw or "").strip()
-    start = raw.find("{")
-    end = raw.rfind("}")
-    if start >= 0 and end > start:
-        raw = raw[start:end + 1]
-    return json.loads(raw)
+def generate_result(client, contents):
+    last_error = None
+    models = candidate_models(client)
+    if not models:
+        raise RuntimeError("이 키로 쓸 수 있는 분석 모델을 찾지 못했습니다.")
+    for model_name in models:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    temperature=0.2,
+                    response_mime_type="application/json",
+                    system_instruction="너는 분쟁 참고 의견 보조다. 법원이나 변호사가 아니다. JSON만 출력한다.",
+                ),
+            )
+            return model_name, parse_json(getattr(response, "text", ""))
+        except Exception as e:
+            last_error = e
+            message = str(e)
+            if any(word in message for word in ("503", "429", "UNAVAILABLE", "high demand")):
+                continue
+            raise
+    raise RuntimeError(f"지금 모델이 모두 붐빕니다. 1~2분 뒤 다시 눌러 주세요.\n{last_error}")
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown('<div class="step">STEP 1</div>', unsafe_allow_html=True)
@@ -159,22 +214,9 @@ other_fault, summary, legal_basis, polite_message, firm_message, evidence_note
                 contents.append(types.Part.from_bytes(data=file.getvalue(), mime_type=mime))
 
             try:
-                with st.spinner("사진과 설명을 분석하고 있습니다..."):
+                with st.spinner("다른 모델을 찾아 분석하고 있습니다..."):
                     client = genai.Client(api_key=api_key)
-                    model_name = pick_model(client)
-                    if not model_name:
-                        st.error("이 키로 쓸 수 있는 분석 모델을 찾지 못했습니다.")
-                        st.stop()
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=contents,
-                        config=types.GenerateContentConfig(
-                            temperature=0.2,
-                            response_mime_type="application/json",
-                            system_instruction="너는 분쟁 참고 의견 보조다. 법원이나 변호사가 아니다. JSON만 출력한다.",
-                        ),
-                    )
-                data = parse_json(getattr(response, "text", ""))
+                    model_name, data = generate_result(client, contents)
             except Exception as e:
                 st.error("분석에 실패했습니다. 아래 글을 키 없이 복사해 주세요.")
                 st.code(str(e))
