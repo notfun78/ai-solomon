@@ -15,66 +15,65 @@ st.markdown(
     <style>
     html, body, .stApp, [data-testid="stAppViewContainer"],
     [data-testid="stHeader"], [data-testid="stToolbar"] {
-        background: #10151f !important;
-        color: #f2f4f8 !important;
+        background: #f5f6f9 !important;
+        color: #0b0b18 !important;
     }
     .block-container { padding-top: 2.2rem; padding-bottom: 3rem; max-width: 860px; }
     .hero {
-        background: #161e2e !important; color: #f2f4f8 !important;
-        border: 1px solid #2a354a; border-radius: 18px;
+        background: #ffffff !important; color: #0b0b18 !important;
+        border: 1px solid #eadbdb; border-radius: 18px;
         padding: 28px 28px 22px 28px; margin-bottom: 18px;
     }
-    .hero h1 { font-size: 2rem; margin: 0 0 8px 0; color: #f7f8fb !important; }
-    .hero p { margin: 0; color: #d5dbe6 !important; }
+    .hero h1 { font-size: 2rem; margin: 0 0 8px 0; color: #0b0b18 !important; }
+    .hero p { margin: 0; color: #3a3a4a !important; }
     .badge-row { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
     .badge {
-        background: rgba(212, 180, 131, 0.12); border: 1px solid rgba(212, 180, 131, 0.28);
-        color: #e6d3b0 !important; border-radius: 999px; padding: 4px 10px; font-size: 0.82rem;
+        background: #f6dfdf; border: 1px solid #e7c4c4;
+        color: #8a2e28 !important; border-radius: 999px; padding: 4px 10px; font-size: 0.82rem;
     }
     .card, .result-head {
-        background: #171e2c !important; border: 1px solid #2a354a; border-radius: 16px;
-        padding: 18px 18px 8px 18px; margin-bottom: 14px; color: #f2f4f8 !important;
+        background: #ffffff !important; border: 1px solid #eadbdb; border-radius: 16px;
+        padding: 18px 18px 8px 18px; margin-bottom: 14px; color: #0b0b18 !important;
     }
-    .step { color: #d4b483 !important; font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; }
+    .step { color: #d4483e !important; font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; }
     h1, h2, h3, p, span, label, li, .stMarkdown, [data-testid="stWidgetLabel"] {
-        color: #f2f4f8 !important;
+        color: #0b0b18 !important;
     }
     textarea, input, [data-baseweb="select"] > div {
-        background: #121826 !important;
-        color: #f2f4f8 !important;
-        border-color: #3a465c !important;
-        -webkit-text-fill-color: #f2f4f8 !important;
+        background: #ffffff !important;
+        color: #0b0b18 !important;
+        border-color: #e0d4d4 !important;
+        -webkit-text-fill-color: #0b0b18 !important;
     }
-    textarea::placeholder, input::placeholder { color: #9aa6ba !important; }
+    textarea::placeholder, input::placeholder { color: #8a8490 !important; }
     [data-testid="stFileUploader"] section {
-        background: #121826 !important;
-        border-color: #3a465c !important;
-        color: #f2f4f8 !important;
+        background: #ffffff !important;
+        border-color: #e0d4d4 !important;
+        color: #0b0b18 !important;
     }
-    [data-testid="stFileUploader"] section * { color: #f2f4f8 !important; }
+    [data-testid="stFileUploader"] section * { color: #0b0b18 !important; }
     button[kind="primary"] {
-        background: #d4b483 !important;
-        color: #10151f !important;
+        background: #d4483e !important;
+        color: #ffffff !important;
         border: none !important;
     }
-    button[kind="primary"] * { color: #10151f !important; }
-    .split { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: #2a3344; margin: 8px 0 6px 0; }
-    .split-a { background: #8eb4e8; }
-    .split-b { background: #d4b483; }
-    .note { color: #c5cedd !important; font-size: 0.86rem; }
+    button[kind="primary"] * { color: #ffffff !important; }
+    .split { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: #eadbdb; margin: 8px 0 6px 0; }
+    .split-a { background: #d4483e; }
+    .split-b { background: #f6dfdf; }
+    .note { color: #4a4450 !important; font-size: 0.86rem; }
     div[data-testid="stMetric"] {
-        background: #121826 !important; border: 1px solid #2a354a;
+        background: #ffffff !important; border: 1px solid #eadbdb;
         border-radius: 14px; padding: 10px 12px;
     }
     pre, code, .stCode {
-        background: #121826 !important;
-        color: #f2f4f8 !important;
+        background: #f6dfdf !important;
+        color: #0b0b18 !important;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
-
 st.markdown(
     """
     <div class="hero">
