@@ -236,7 +236,7 @@ other_fault, summary, legal_basis, polite_message, firm_message, evidence_note
                     <div class="split-a" style="width:{other}%"></div>
                     <div class="split-b" style="width:{own}%"></div>
                 </div>
-                <div class="note">남색이 상대방, 금색이 본인 비중입니다. 추정값이며 판결이 아닙니다.</div>
+                <div class="note">빨간색이 상대방, 분홍색이 본인 비중입니다. 추정값이며 판결이 아닙니다.</div>
                 """,
                 unsafe_allow_html=True,
             )
