@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 
 st.set_page_config(
-    page_title="AI 솔로몬 판사",
+    page_title="누가 더 잘못 했나요? 억울한 상황 판독기 AI 솔로몬 판사",
     page_icon="⚖️",
     layout="centered",
     initial_sidebar_state="collapsed",
