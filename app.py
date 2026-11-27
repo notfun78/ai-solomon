@@ -77,7 +77,7 @@ st.markdown(
 st.markdown(
     """
     <div class="hero">
-        <h1>⚖️ 누가 더 잘못 했나요? 억울한 상황 판독기 AI 솔로몬 판사</h1>
+        <h1>⚖️ 억울한 상황 판독기 AI 솔로몬 판사</h1>
         <p>캡처와 설명을 보고, 책임 비중과 대응 문안을 참고용으로 정리합니다.</p>
         <div class="badge-row">
             <span class="badge">참고용 의견</span>
